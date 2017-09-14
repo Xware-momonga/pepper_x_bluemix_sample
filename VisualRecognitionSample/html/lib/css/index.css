@@ -1,0 +1,31 @@
+body {
+	background-color: #dff0d8;
+	height: 1067px;
+	width: 1707px;
+}
+#display_image {
+	text-align: center;
+	padding-top: 250px;
+}
+#result_table {
+	margin-left: 50px;
+	margin-top: 70px;
+}
+.name {
+	background-color: rgb(218, 218, 218);
+	font-size: 70px;
+	text-align: center;
+}
+.result {
+	background-color: #f9f9f9;
+	font-size: 60px;
+	padding-left: 10px;
+	white-space: nowrap;
+}
+#classes {
+	padding-right: 0px;
+}
+#scores {
+	border-left: solid 2px gray;
+	padding-left: 0px;
+}

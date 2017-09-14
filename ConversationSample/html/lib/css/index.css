@@ -1,0 +1,13 @@
+body {
+	overflow:hidden;
+	height: 1067px;
+	width: 1707px;
+	background-color: #dff3ff;
+	font-size: 75px;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+hr {
+	border-color: #000;
+}

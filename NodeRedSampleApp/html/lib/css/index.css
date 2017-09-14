@@ -1,0 +1,14 @@
+body {
+	overflow:hidden;
+	height: 1067px;
+	width: 1707px;
+	background-color: #dff3ff;
+	font-size: 250px;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+#temperature {
+	text-align: center;
+	margin-top: 300px;
+}
