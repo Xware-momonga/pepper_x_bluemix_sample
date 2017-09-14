@@ -12,8 +12,13 @@
 
 資料とリポジトリ内プロジェクトの対応は以下の通りです。
 
-- Speech To Text 連携：SpeechToTextSample/
-- Conversation 連携：ConversationSample/
-- Language Translator 連携：TranslationSample/
-- Visual Recognition 連携：VisualRecognitionSample/
-- IoT Platform 連携：NodeRedSampleApp/
+- Speech To Text 連携
+  - SpeechToTextSample/
+- Conversation 連携
+  - ConversationSample/
+- Language Translator 連携
+  - TranslationSample/
+- Visual Recognition 連携
+  - VisualRecognitionSample/
+- IoT Platform 連携
+  - NodeRedSampleApp/
