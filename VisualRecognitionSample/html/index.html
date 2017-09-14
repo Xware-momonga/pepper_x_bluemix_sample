@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+
+<meta charset='UTF-8'>
+<meta content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+
+<title>Visual Recognition Sample</title>
+
+<!--外部ライブラリーJS-->
+<script type='text/javascript' charset='utf-8' src='lib/plugins/jquery/jquery.min.js'></script>
+<script type='text/javascript' charset='utf-8' src='lib/plugins/bootstrap/bootstrap.min.js'></script>
+<script type='text/javascript' charset='utf-8' src='lib/plugins/qi/qi.js'></script>
+
+<!--外部ライブラリーCSS-->
+<link type='text/css' rel='stylesheet' href='lib/plugins/bootstrap/bootstrap.min.css'>
+<link type='text/css' rel='stylesheet' href='lib/plugins/ionicons/css/ionicons.min.css'>
+
+<!--自作CSS-->
+<link type='text/css' rel='stylesheet' href='lib/css/index.css'>
+
+<!--外部ライブラリーJS - 新型タブレット表示用です。必ずここに置いてください。-->
+<script type='text/javascript' charset='utf-8' src='lib/js/adjust23.js'></script>
+
+</head>
+<body>
+<!-- 写真の出力 -->
+<div class='col-sm-5' id='display_image'></div>
+
+<!-- 分類結果の表の出力 -->
+<div class='col-sm-6 col-sm-offset-1' id='result_table'>
+	<div class='col-sm-8' id='classes'>
+		<div class='name'>分類</div>
+		<div class='result' id='result_class'></div>
+	</div>
+	<div class='col-sm-4' id='scores'>
+		<div class='name'>確度</div>
+		<div class='result' id='result_score'></div>
+	</div>
+</div>
+
+<!--自作JS-->
+<script type='text/javascript' charset='utf-8' src='lib/js/index.js'></script>
+
+</body>
+</html>

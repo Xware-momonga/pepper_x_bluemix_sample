@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?><ChoregrapheProject xmlns="http://www.aldebaran-robotics.com/schema/choregraphe/project.xsd" xar_version="3"><Box name="root" id="-1" localization="8" tooltip="Root box of Choregraphe&apos;s behavior. Highest level possible." x="0" y="0"><bitmap>media/images/box/root.png</bitmap><script language="4"><content><![CDATA[]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Timeline enable="0"><BehaviorLayer name="behavior_layer1"><BehaviorKeyframe name="keyframe1" index="1"><Diagram><Box name="ClassifyImage" id="1" localization="8" tooltip="This box contains a basic python script and can be used to create any python script box you would like.&#x0A;&#x0A;To edit its script, double-click on it." x="359" y="69"><bitmap>media/images/box/box-python-script.png</bitmap><script language="4"><content><![CDATA[import json
+import mimetypes
+from os.path import join, dirname
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.memory = ALProxy('ALMemory')
+        self.frameManager = ALProxy("ALFrameManager")
+
+        self.imagePath = join(self.frameManager.getBehaviorPath(self.behaviorId), '../html/image.jpg')
+        self.url = self.getParameter('URL')
+        self.apiKey = self.getParameter('API Key')
+        self.version = self.getParameter('Version')
+
+    def onUnload(self):
+        self.memory = None
+        self.frameManager = None
+
+        self.imagePath = None
+        self.url = None
+        self.apiKey = None
+        self.version = None
+
+    def onInput_onStart(self):
+        """
+        : リクエストで画像をアップロードして、画像認識の結果を取得します。
+        : その結果を使って、HTMLに画像とその画像の詳細を表示します。
+        """
+
+        url = '%s?api_key=%s&version=%s' % (self.url, self.apiKey, self.version)
+
+        #postする画像ファイルを開いて、画像の種類と画像の名前をfilesでpostします。
+        with open(self.imagePath, 'rb') as imageFile:
+            filename = imageFile.name
+            mimeType = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+
+            files = {
+                'images_file': (filename, imageFile, mimeType)
+            }
+
+            r = requests.post(url, files=files)
+
+        status = r.status_code
+
+        # postした時に成功したか否かの判断をします
+        if status == 200:
+            results = r.json()
+            self._getClassifiers(results)
+        else:
+            self.logger.info('classifyのpostでエラーが発生しました')
+
+        self.onStopped()
+
+    def _getClassifiers(self, results):
+        """
+        : サーバーから取得して画像認識の結果を分析してメモリーに保存します。
+        : 保存できた後、画像を表示するHTMLに切り替えます。
+        :
+        : arg results = サーバーから取得した画像認識結果
+        """
+        # 取得したjson形式の画像認識結果のデータからそれぞれの分類の詳細を配列に格納します。
+        classes = results['images'][0]['classifiers'][0]['classes']
+
+        result = []
+        for x in classes:
+            features = []
+            features.append(x['class'].encode('utf-8'))
+            features.append(x['score'])
+            result.append(features)
+
+        self.memory.raiseEvent("visual_recognition/classify/class", result)
+        pass]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" /><Output name="onError" type="3" type_size="1" nature="2" inner="0" tooltip="" id="5" /><Parameter name="URL" inherits_from_parent="0" content_type="3" value="" default_value="" custom_choice="0" tooltip="" id="6" /><Parameter name="API Key" inherits_from_parent="0" content_type="3" value="" default_value="" custom_choice="0" tooltip="" id="7" /><Parameter name="Version" inherits_from_parent="0" content_type="3" value="2016-05-20" default_value="" custom_choice="0" tooltip="" id="8" /></Box><Box name="ShowApp" id="4" localization="8" tooltip="Loads the application on the tablet, if it exists, and displays the webview.&#x0A;&#x0A;V1.0.0&#x0A;" x="178" y="172"><bitmap>media/images/box/root.png</bitmap><script language="4"><content><![CDATA[class MyClass(GeneratedClass):
+
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        self.tabletService = ALProxy('ALTabletService')
+        self.appName = self.packageUid()
+
+        self.isRunning = False
+
+    def onUnload(self):
+        self.tabletService = None
+        self.appName = None
+
+        self.isRunning = False
+
+    def onInput_onStart(self):
+        """
+        : > INPUT
+        : アプリのindex.htmlを表示します（初期化時のみに発生します）
+        """
+        if not self.isRunning:
+            self.isRunning = True
+            self.tabletService.loadApplication(self.appName)
+            self.tabletService.showWebview()
+            self.onTabletInitialised()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="1" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onTabletInitialised" type="1" type_size="1" nature="2" inner="0" tooltip="" id="3" /><Output name="onError" type="3" type_size="1" nature="2" inner="0" tooltip="" id="4" /></Box><Box name="Comment" id="2" localization="8" tooltip="To comment your behavior. Enter the text here and move the box where you like&#x0A;to add the comment.&#x0A;&#x0A;Note: This box is not functional and has no effect on the behavior." plugin="textedit_plugin" x="116" y="476"><bitmap>media/images/box/box-script.png</bitmap><script language="4"><content><![CDATA[# /!\ Generated content. Do not edit!
+class MyClass(GeneratedClass):
+	def __init__(self):
+		GeneratedClass.__init__(self)
+
+	def onInput_onStart(self):
+		self.onStopped("Pythonのバージョンの問題で、このサンプルアプリのみはWatsonのライブラリーを使いません。リクエストで画像認識の結果を取得します。")]]></content></script><pluginContent><text><![CDATA[Pythonのバージョンの問題で、このサンプルアプリのみはWatsonのライブラリーを使いません。リクエストで画像認識の結果を取得します。]]></text></pluginContent><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when Diagram is loaded." id="1" /></Box><Box name="Take Picture" id="5" localization="8" tooltip="Take a picture with one of the cameras camera and store it in his memory in ~/recordings/cameras. The image format is JPG.&#x0A;&#x0A;V1.1.0&#x0A;" x="185" y="53"><bitmap>media/images/box/interaction/picture.png</bitmap><script language="4"><content><![CDATA[import time
+
+class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+        self.resolutionMap = {
+            '160 x 120': 0,
+            '320 x 240': 1,
+            '640 x 480': 2,
+            '1280 x 960': 3
+        }
+        self.cameraMap = {
+            'Top': 0,
+            'Bottom': 1
+        }
+
+        self.recordFolder = "/home/nao/recordings/cameras/"
+
+    def onLoad(self):
+        self.memory = ALProxy('ALMemory')
+        self.framemanager = ALProxy("ALFrameManager")
+        self.bIsRunning = False
+        try:
+            self.photoCapture = ALProxy( "ALPhotoCapture" )
+        except Exception as e:
+            self.photoCapture = None
+            self.logger.error(e)
+
+    def onUnload(self):
+        pass
+
+    def onInput_onStart(self):
+        import os
+        self.recordFolder = os.path.join(
+        self.framemanager.getBehaviorPath(self.behaviorId), "../html")
+        if( self.bIsRunning ):
+            return
+        self.bIsRunning = True
+        resolution = self.resolutionMap[self.getParameter("Resolution")]
+        cameraID = self.cameraMap[self.getParameter("Camera")]
+        fileName = self.getParameter("File Name")
+        if self.photoCapture:
+            self.photoCapture.setResolution(resolution)
+            self.photoCapture.setCameraID(cameraID)
+            self.photoCapture.setPictureFormat("jpg")
+            self.photoCapture.takePicture( self.recordFolder, fileName )
+        self.bIsRunning = False
+        self.memory.raiseEvent("visual_recognition/classify/take_picture", True)
+        self.onStopped()]]></content></script><Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" /><Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" /><Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" /><Parameter name="Resolution" inherits_from_parent="0" content_type="3" value="640 x 480" default_value="640 x 480" custom_choice="0" tooltip="Image resolution." id="4"><Choice value="160 x 120" /><Choice value="320 x 240" /><Choice value="640 x 480" /><Choice value="1280 x 960" /></Parameter><Parameter name="File Name" inherits_from_parent="0" content_type="3" value="image.jpg" default_value="image" custom_choice="0" tooltip="Name of the file without its extension." id="5" /><Parameter name="Camera" inherits_from_parent="0" content_type="3" value="Top" default_value="Top" custom_choice="0" tooltip="Enables to select the camera (Top or Bottom) that will take the picture." id="6"><Choice value="Top" /><Choice value="Bottom" /></Parameter></Box><Link inputowner="4" indexofinput="2" outputowner="0" indexofoutput="2" /><Link inputowner="1" indexofinput="2" outputowner="5" indexofoutput="3" /></Diagram></BehaviorKeyframe></BehaviorLayer></Timeline></Box></ChoregrapheProject>
