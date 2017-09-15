@@ -6,7 +6,8 @@
 
 ## 当日の資料
 
-- 公開準備中
+- [SlideShare](https://www.slideshare.net/secret/oRocaf0rGdTSjO)
+- [PDF](https://github.com/Xware-momonga/pepper_x_bluemix_sample/tree/master/documents)
 
 ## サンプルロボアプリの簡単な説明
 
@@ -14,11 +15,16 @@
 
 - Speech To Text 連携
   - SpeechToTextSample/
+
 - Conversation 連携
   - ConversationSample/
+
 - Language Translator 連携
   - TranslationSample/
+
 - Visual Recognition 連携
   - VisualRecognitionSample/
+
 - IoT Platform 連携
   - NodeRedSampleApp/
+  - Node-RED_export/
